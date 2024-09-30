@@ -15,7 +15,7 @@ public class CountryCodeConverter {
 
     // == Instance Variables ==
     // codeMap maps a country's alpha-3 code to its English name.
-    Map<String, String> codeMap = new HashMap<String, String>();
+    Map<String, String> codeMap = new HashMap<>();
 
     // == Constructors ==
     /**
@@ -36,19 +36,23 @@ public class CountryCodeConverter {
             // Get the path of the file in the resources folder
             List<String> lines = Files.readAllLines(Paths.get(getClass().getClassLoader()
                     .getResource(filename).toURI()));
-
+            Boolean startRecord = false;
             // Loop through each line in the file
             for (String line : lines) {
-                String[] parts = line.split("\t");
+                if (startRecord) {
+                    String[] parts = line.split("\t");
 
-                // Make sure we have exactly two parts: country name and code
-                if (parts.length >= 3) {
-                    String country = parts[0].trim();
-                    String code = parts[2].trim();
+                    // Make sure we have exactly two parts: country name and code
+                    if (parts.length >= 3) {
+                        String country = parts[0].trim();
+                        String code = parts[2].toLowerCase().trim();
 
-                    // Add the mapping to the HashMap
-                    codeMap.put(code, country);
+                        // Add the mapping to the HashMap
+                        codeMap.put(code, country);
+                    }
                 }
+                startRecord = true;
+
             }
             codeMap.remove("Alpha-3 code");
 
@@ -63,7 +67,7 @@ public class CountryCodeConverter {
      * @return the name of the country corresponding to the code
      */
     public String fromCountryCode(String code) {
-        return this.codeMap.get(code);
+        return this.codeMap.get(code.toLowerCase().trim());
     }
 
     /**
